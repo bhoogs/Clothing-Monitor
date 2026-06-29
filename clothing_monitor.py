@@ -82,8 +82,8 @@ def save_seen(seen: dict) -> None:
 
 async def fetch_page_text(page, url: str) -> str:
     try:
-        await page.goto(url, wait_until="networkidle", timeout=30_000)
-        await page.wait_for_timeout(3_000)
+        await page.goto(url, wait_until="domcontentloaded", timeout=45_000)
+        await page.wait_for_timeout(6_000)
         return await page.inner_text("body")
     except Exception as e:
         log.warning("Failed to fetch %s: %s", url, e)
@@ -92,7 +92,8 @@ async def fetch_page_text(page, url: str) -> str:
 async def scrape_brands() -> list[dict]:
     results = []
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch(headless=True)
+        # --disable-http2 fixes ERR_HTTP2_PROTOCOL_ERROR on sites like Lululemon
+        browser = await pw.chromium.launch(headless=True, args=["--disable-http2"])
         ctx = await browser.new_context(user_agent=USER_AGENT)
 
         for brand in BRANDS:
