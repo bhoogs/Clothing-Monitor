@@ -10,6 +10,7 @@ import logging
 import os
 import smtplib
 import sys
+import time
 from datetime import date
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -34,15 +35,14 @@ LOG_FILE   = SCRIPT_DIR / "clothing_monitor.log"
 SEEN_FILE  = SCRIPT_DIR / "seen_sales.json"
 
 BRANDS = [
-    {"name": "Travis Matthew",      "home": "https://www.travismathew.com",           "threshold": 30},
-    {"name": "Rhoback",             "home": "https://rhoback.com",                    "threshold": 30},
-    {"name": "Vuori",               "home": "https://vuoriclothing.com",              "threshold": 20},
-    {"name": "Peter Millar",        "home": "https://www.petermillar.com",            "threshold": 20},
-    {"name": "Holderness & Bourne", "home": "https://www.holdernessandbourne.com",    "threshold": 30},
-    {"name": "Lululemon",           "home": "https://www.lululemon.com",              "threshold": 30},
-    {"name": "Titleist",            "home": "https://www.titleist.com",               "threshold": 30},
-    {"name": "Johnnie O",           "home": "https://www.johnnieo.com",               "threshold": 30},
-    {"name": "Primo Golf",          "home": "https://www.primogolf.com",              "threshold": 30},
+    {"name": "Travis Matthew",      "home": "https://www.travismathew.com",                    "threshold": 30},
+    {"name": "Rhoback",             "home": "https://rhoback.com",                             "threshold": 30},
+    {"name": "Vuori",               "home": "https://vuoriclothing.com",                       "threshold": 20},
+    {"name": "Peter Millar",        "home": "https://www.petermillar.com/sale",                "threshold": 20},
+    {"name": "Holderness & Bourne", "home": "https://www.holdernessandbourne.com",             "threshold": 30},
+    {"name": "Titleist",            "home": "https://www.titleist.com/apparel-gear/",          "threshold": 30},
+    {"name": "Johnnie O",           "home": "https://www.johnnieo.com",                        "threshold": 30},
+    {"name": "Primo Golf",          "home": "https://www.primogolf.com",                       "threshold": 30},
 ]
 
 USER_AGENT = (
@@ -160,13 +160,22 @@ def evaluate_with_gemini(results: list[dict]) -> list[dict]:
 
     prompt = EVAL_PROMPT.format(brands_text=brands_text)
 
-    resp = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt,
-        config=types.GenerateContentConfig(response_mime_type="application/json"),
-    )
-    data = json.loads(resp.text)
-    return data.get("results", [])
+    for attempt in range(3):
+        try:
+            resp = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+                config=types.GenerateContentConfig(response_mime_type="application/json"),
+            )
+            data = json.loads(resp.text)
+            return data.get("results", [])
+        except Exception as e:
+            if attempt < 2:
+                wait = 15 * (attempt + 1)
+                log.warning("Gemini attempt %d failed: %s — retrying in %ds", attempt + 1, e, wait)
+                time.sleep(wait)
+            else:
+                raise
 
 # ── Notifications ──────────────────────────────────────────────────────────────
 
