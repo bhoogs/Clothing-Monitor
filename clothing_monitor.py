@@ -35,14 +35,14 @@ LOG_FILE   = SCRIPT_DIR / "clothing_monitor.log"
 SEEN_FILE  = SCRIPT_DIR / "seen_sales.json"
 
 BRANDS = [
-    {"name": "Travis Matthew",      "home": "https://www.travismathew.com",                    "threshold": 30},
-    {"name": "Rhoback",             "home": "https://rhoback.com",                             "threshold": 30},
-    {"name": "Vuori",               "home": "https://vuoriclothing.com",                       "threshold": 20},
-    {"name": "Peter Millar",        "home": "https://www.petermillar.com/sale",                "threshold": 20},
-    {"name": "Holderness & Bourne", "home": "https://www.holdernessandbourne.com",             "threshold": 30},
-    {"name": "Titleist",            "home": "https://www.titleist.com/apparel-gear/",          "threshold": 30},
-    {"name": "Johnnie O",           "home": "https://www.johnnieo.com",                        "threshold": 30},
-    {"name": "Primo Golf",          "home": "https://www.primogolf.com",                       "threshold": 30},
+    {"name": "Travis Matthew",      "home": "https://www.travismathew.com",                    "threshold": 0},
+    {"name": "Rhoback",             "home": "https://rhoback.com",                             "threshold": 0},
+    {"name": "Vuori",               "home": "https://vuoriclothing.com",                       "threshold": 0},
+    {"name": "Peter Millar",        "home": "https://www.petermillar.com/sale",                "threshold": 0},
+    {"name": "Holderness & Bourne", "home": "https://www.holdernessandbourne.com",             "threshold": 0},
+    {"name": "Titleist",            "home": "https://www.titleist.com/apparel-gear/",          "threshold": 0},
+    {"name": "Johnnie O",           "home": "https://www.johnnieo.com",                        "threshold": 0},
+    {"name": "Primo Golf",          "home": "https://www.primogolf.com",                       "threshold": 0},
 ]
 
 USER_AGENT = (
